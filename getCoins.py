@@ -44,11 +44,13 @@ def getCoins(coin = None, limit = None, start_date = None, end_date = None):
         startTime = time.time()
         df_scraped = scraper.parse_url(url)[0][1]
         print(str(url), 'scraped in', str(time.time() - startTime))
-
         all_dfs.append(df_scraped)
 
 
+
     #stack all dataframes into one df
+    # for df in all_dfs:
+    #     df.columns = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Market Cap']
     df = pd.concat(all_dfs).reset_index(drop=True)
 
 
@@ -77,7 +79,6 @@ if __name__ == '__main__':
         try:
             coins = coins.replace(" ","").split(",")
         except:
-
             coins = coins.replace(" ","")
 
 
@@ -86,8 +87,8 @@ if __name__ == '__main__':
     print(df)
     print(type(df), df.shape)
 
-    #out
+    #outfile
     try:
-        df.to_csv("out.csv", sep='\t')
+        df.to_csv("out.csv",index=False, date_format='%Y%m%d')
     except:
         pass
