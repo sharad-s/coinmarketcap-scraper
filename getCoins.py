@@ -70,7 +70,11 @@ if __name__ == '__main__':
     #Simple prompt, not necessary
     print("Enter 1 or more coin symbols")
     print('Example: "xmr, neo, iota, req"')
-    coins = input('>').replace(" ","").split(",")
+    coins = input('>')
+    try:
+        coins = coins.replace(" ","").split(",")
+    except:
+        coins = coins.replace(" ","")
 
     #run getCoins
     df = getCoins(coins)
