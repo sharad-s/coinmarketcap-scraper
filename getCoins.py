@@ -68,15 +68,26 @@ def getCoins(coin = None, limit = None, start_date = None, end_date = None):
 if __name__ == '__main__':
 
     #Simple prompt, not necessary
-    print("Enter 1 or more coin symbols")
+    print("Enter comma-separated coin symbols.\nLeave empty to collect all coins")
     print('Example: "xmr, neo, iota, req"')
     coins = input('>')
-    try:
-        coins = coins.replace(" ","").split(",")
-    except:
-        coins = coins.replace(" ","")
+    if not coins:
+        coins = None
+    else:
+        try:
+            coins = coins.replace(" ","").split(",")
+        except:
+
+            coins = coins.replace(" ","")
+
 
     #run getCoins
     df = getCoins(coins)
     print(df)
     print(type(df), df.shape)
+
+    #out
+    try:
+        df.to_csv("out.csv", sep='\t')
+    except:
+        pass
