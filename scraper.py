@@ -9,7 +9,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import requests
 
-class HTMLTableParser:
+class _HTMLTableParser:
 
     def parse_url(self, url):
         r = requests.get(url)
@@ -58,6 +58,7 @@ class HTMLTableParser:
                 column_marker += 1
             if len(columns) > 0:
                 row_marker += 1
+
 
         # Convert to float if possible
         for col in df:

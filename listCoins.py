@@ -12,7 +12,7 @@ Pass in coins as array
 coins = ['xmr']
 '''
 
-def listCoins(coins = None, start_date = None, end_date = None):
+def _listCoins(coins = None, start_date = None, end_date = None):
 
     #set start_date, end_date
     if not start_date:
@@ -36,9 +36,9 @@ def listCoins(coins = None, start_date = None, end_date = None):
     # symbol = df[df.columns[4]]
     all_coins = df[df.columns[5]]
 
-    #Grab indices of input coins from dataframe
+    #Get indices of input coins in dataframe
     #Searches for symbol, slug, or name
-    #TODO: optimize search
+    #TODO: optimize search... grosss
     indices = []
     if coins:
         for k, entry in enumerate(all_coins):
