@@ -1,15 +1,13 @@
 '''
-Horribly unoptimized :'(
-Quick and dirty.
-
-
-Alt. method is to simply convert
-the following historical data to a dataframe for analysis:
-https://www.kaggle.com/jessevent/all-crypto-currencies/version/12
+#`Horribly unoptimized :'(
+#`Quick and dirty.
+#``
+#`Alt. method is to simply convert
+#`the following historical data to a dataframe for analysis:
+#`https://www.kaggle.com/jessevent/all-crypto-currencies/version/12
 '''
 import pandas as pd
 import time
-import pprint
 
 #multithreading
 import threading
@@ -21,56 +19,51 @@ from scraper import _HTMLTableParser
 
 '''
 coin: ["xmr"] or ["xmr", "req", "iota"]
-limit: "" #not implemented yet
+start_date: "YYYYMMDD" - "20130428" or "20180228"
+end_date: "YYYYMMDD"
+
 '''
 def getCoins(coin = None, limit = None, start_date = None, end_date = None):
     print("Retrieving coin market history from CoinMarketCap.")
 
     #Get all input coins and build dataframes
-    coins = _listCoins(coin, start_date, end_date)               #returns dataframe
-    df_coinnames = coins[['symbol', 'name', 'rank', 'slug']]       #dataframe
-
-    #Obtain all urls
-    history_urls = []
-    for index, url in coins['history_url'].iteritems():
-        history_urls.append(url)
+    coins = _listCoins(coin, start_date, end_date)           #returns dataframe
 
     #scrape each url for market data
     scraper = _HTMLTableParser()
     all_dfs = []
-    for url in history_urls:
+    for index, row in coins.iterrows():
+        coinnames = row[['slug', 'symbol', 'name', 'rank']]  #Series
+        df_names = pd.DataFrame({'slug': [coinnames['slug']],
+                            'symbol': [coinnames['symbol']],
+                            'name': [coinnames['name']],
+                            'rank': [coinnames['rank']]
+                            })
 
         #grab market dataframe from HTML table
+        url = row['history_url']
         startTime = time.time()
         df_scraped = scraper.parse_url(url)[0][1]
         print(str(url), 'scraped in', str(time.time() - startTime))
-        all_dfs.append(df_scraped)
 
+        #repeat names dataframe to match market dataframe
+        df_names = pd.concat([df_names]*len(df_scraped.index), ignore_index=True)
 
+        #join names dataframe with market dataframe
+        df_joined = pd.concat([df_names,df_scraped], axis=1)
+
+        #append current coin's dataframe to all coins' dataframe
+        all_dfs.append(df_joined)
 
     #stack all dataframes into one df
-    # for df in all_dfs:
-    #     df.columns = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Market Cap']
     df = pd.concat(all_dfs).reset_index(drop=True)
-
-
-    #TODO: ADD NAMES TO DATAFRAME! By..
-    #TODO: join scraped dataframe with respective coinname data
-    #>for url in history_urls:
-    #>   get df_scraped
-
-    #>   for row in df_coinnames which contains 'symbol':
-    #>       add row of df_coinnames to all rows of df_scraped
-
-    #>stack all dataframes into one df
-    #>return df
 
     return df
 
 if __name__ == '__main__':
 
-    #Simple prompt, not necessary
-    print("Enter comma-separated coin symbols.\nLeave empty to collect all coins")
+    #Simple prompt
+    print("Enter comma-separated coin symbols.\n(Leave empty to gather all coins)")
     print('Example: "xmr, neo, iota, req"')
     coins = input('>')
     if not coins:
@@ -84,7 +77,7 @@ if __name__ == '__main__':
 
     #run getCoins
     df = getCoins(coins)
-    print(df)
+    # print(df)
     print(type(df), df.shape)
 
     #outfile

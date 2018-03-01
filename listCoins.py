@@ -51,7 +51,7 @@ def _listCoins(coins = None, start_date = None, end_date = None):
         indices = list(range(len(df.index)))
 
     #Create subset dataframe
-    df_subset = df.loc[indices, ['symbol', 'name', 'slug', 'rank']]
+    df_subset = df.loc[indices, ['slug', 'symbol', 'name', 'rank']]
 
     #add exchange url and history url to subset
     exchange_urls = []
